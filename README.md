@@ -1,15 +1,17 @@
 ## doojs
 simple ajax class
 ### Usage
-#### get
+#### - get
 - get takes 2 paramters, `url` and `callback`
 	```js
+
 		"use strict"
 		doo.get(url, cb);
+	
 	```
 	the `callback` takes 2 parameters, `error` and `response`, `response` is a javascript object
 
-#### post
+#### - post
 - post takes 2 parameters, `url`, `formData` and `callback`
 	```js
 
