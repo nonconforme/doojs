@@ -1,64 +1,96 @@
 /**
-* doo v0.1.0
+* doo v0.0.5
 *
-* Create and maintener by Dakia Franck
+* Create and maintener by Dakia Franck and diagnostic develper
+* - Etchien Boa
+* - Zokora Elvice
 * http://github.com/papac/doojs
 */
+
 (function(){
 
 "use strict";
 
-var dooXhr = function() {
-
-	return "XMLHttpRequest" in window 
-	? new XMLHttpRequest() 
-	: new ActiveXObejct(Microsoft.XML);
-
-};
-
-var networkMessage = function() {
-	throw new Error("Verifiez votre connection réseau.");
-};
-
-var errorMessage = function($msg) {
-
-	throw new TypeError(msg);
-
-};
-
-
 var  Doo = function () {
 
-	this.get = function(url, fn){
-	
+	this.get = function(options){
+
+		if(options.interval != "undefined" && options.timeout != "undefined") {
+
+			options.error({error: 0, status: "not define interval and timeout"});
+			throw new Error("not define interval and timeout");
+		
+		}
+
+		if(options.dataType == undefined) {
+			
+			options.dataType = "json";
+
+		}
+
 		var _xhr = null;
 	
-		_xhr = dooXhr();
+		_xhr = this.dooXhr();
 	
-		_xhr.open("GET", url);
+		_xhr.open(options.method, options.url + (options.data != undefined ? "?" + options.data : ""));
 	
 		_xhr.withCredentials = true;
 
-		_xhr.addEventListener("readystatechange", function() {
+		if(options.type != undefined) {
+		
+			_xhr.setRequestHeader("Content-Type", options.type);
+		
+		}
+
+		_xhr.addEventListener("load", function() {
 
 			if(this.readyState === this.DONE &&  this.status === 200) {
-					
-				return fn(null, JSON.parse(_xhr.responseText));
-			
+				
+				var data = {};
+
+				if(options.dataType === "json") {
+
+					data = JSON.parse(_xhr.responseText);
+
+				} else if (options.dataType === "xml"){
+				
+					data = _xhr.responseXML;
+				
+				} else {
+
+					data = _xhr.responseText;
+
+				}
+
+				
+				if(typeof options.timeout == "undefined") {
+
+					return setTimeout(options.success, options.timeout, data);
+
+				} else if(typeof options.interval == "undefined"){
+
+					return setInterval(options.success, options.interval, data);
+
+				} else {
+
+					return options.success(data);
+
+				}
+
 			}else if(this.readyState === this.DONE && this.status !== 200) {
 				
-				return fn({
-					
-					code: _xhr.status,
-					statusText: _xhr.statusText
-				
-				}, undefined);
+				return options.error({
+					error: _xhr.status, 
+					status: _xhr.statusText
+				});
+
 			}
+
 		}, false);
 
 		_xhr.addEventListener("error", function(event){
 			
-			networkMessage();
+			options.error(event);
 
 		}, false);
 
@@ -67,47 +99,50 @@ var  Doo = function () {
 		return this;
 	};
 
-	this.post = function(url, data, fn){
+	this.post = function(options){
 
 		var _xhr = null, form;
 		
 		form = new FormData();
 		_xhr = dooXhr();
 
-		for(name in data) { 
+		for(name in options.data) { 
 
-			form.append(name, data[name]);
+			form.append(name, options.data[name]);
 
 		}
 
-		_xhr.open("POST", url);
-		
-		_xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		
+		_xhr.open(options.method, options.url);
+				
 		_xhr.withCredentials = true;
 
-		_xhr.addEventListener("readystatechange", function() {
+		if(options.type != undefined) {
+		
+			_xhr.setRequestHeader("Content-Type", options.type);
+		
+		}
+
+		_xhr.addEventListener("load", function() {
 
 			if(this.readyState === this.DONE &&  this.status === 200) {
-
-				return fn(JSON.parse(_xhr.responseText));
+				console.log(this.timeout);
+				return options.success();
 			
 			}else if(this.readyState === this.DONE && this.status !== 200) {
 
-				return fn({
-				
+				return options.error({
 					code: _xhr.status,
 					statusText: _xhr.statusText,
-					url: url
-				
+					url: options.url
 				});
 
 			}
+
 		}, false);
 
 		_xhr.addEventListener("error", function(event) {
 
-			networkMessage();
+			options.error(event);
 		
 		}, false);
 
@@ -116,36 +151,16 @@ var  Doo = function () {
 		return this;
 	};
 
-	this.timeout = function(cb, ms) {
-
-		if(typeof cb === 'function') {
-
-			setTimeout(cb, ms, this);
-		
-		} else {
-
-			errorMessage(cb + " not a function.");
-		}
-
-		return this;
-
-	};
-	this.timeinterval = function(cb, ms) {
-
-		if(typeof cb === 'function') {
-
-			setInterval(cb, ms, this);
-		
-		} else {
-
-			errorMessage(cb + " not a function.");
-		}
-
-		return this;
-	}
 };
 
-Doo.prototype.version = "0.1.0";
+Doo.prototype.version = "0.0.5";
+Doo.prototype.dooXhr = function() {
+
+	return "XMLHttpRequest" in window 
+	? new XMLHttpRequest() 
+	: new ActiveXObejct(Microsoft.XML);
+
+};
 
 this.doo = new Doo();
 
