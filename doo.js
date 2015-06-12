@@ -1,21 +1,31 @@
 /**
 * doo v0.0.5
+* <info@diagnostic-ci.com>
 *
-* Create and maintener by Dakia Franck and diagnostic develper
+* Create and maintener by Franck Dakia and diagnostic develper
 * - Etchien Boa
-* - Zokora Elvice
+* - Elvice Zokora
 * http://github.com/papac/doojs
 */
 
-(function(){
+;(function(){
 
 "use strict";
 
-var  Doo = function () {
+var next = function(fn, data, ms) {
 
+	fn(data);
+	setTimeout(next, ms, fn, data, ms);
+
+};
+
+var  Doo = function () {
+	/**
+	* get,  fonction permettant de 
+	*/
 	this.get = function(options){
 
-		if(options.interval != "undefined" && options.timeout != "undefined") {
+		if(options.interval != undefined && options.timeout != undefined) {
 
 			options.error({error: 0, status: "not define interval and timeout"});
 			throw new Error("not define interval and timeout");
@@ -28,16 +38,30 @@ var  Doo = function () {
 
 		}
 
-		var _xhr = null;
+		var _xhr = null, data = "";
 	
-		_xhr = this.dooXhr();
+		_xhr = this.getXhr();
+		_xhr.timout = 3000;
+
+		if(options.data != undefined) {
+
+			if(!/\?/.test(options.url)) {
+
+				data = "?";
+				
+			} 
+
+			data += options.data;
+
+		}
 	
-		_xhr.open(options.method, options.url + (options.data != undefined ? "?" + options.data : ""));
+		_xhr.open("GET", options.url + encodeURIComponent(data));
 	
 		_xhr.withCredentials = true;
 
 		if(options.type != undefined) {
-		
+
+			_xhr.overrideMimeType(options.type);
 			_xhr.setRequestHeader("Content-Type", options.type);
 		
 		}
@@ -45,31 +69,40 @@ var  Doo = function () {
 		_xhr.addEventListener("load", function() {
 
 			if(this.readyState === this.DONE &&  this.status === 200) {
-				
+
 				var data = {};
 
-				if(options.dataType === "json") {
+				try {
 
-					data = JSON.parse(_xhr.responseText);
+					if(options.dataType === "json") {
 
-				} else if (options.dataType === "xml"){
-				
-					data = _xhr.responseXML;
-				
-				} else {
+						data = JSON.parse(_xhr.responseText);
 
-					data = _xhr.responseText;
+					} else if (options.dataType === "xml"){
+					
+						data = _xhr.responseXML;
+					
+					} else {
+
+						data = _xhr.responseText;
+
+					}
+
+
+				} catch(e) {
+
+					console.error("les données réçus non pas pu être transtyper.", e);
+					options.error({error: 1, status: _xhr.responseText});
 
 				}
-
 				
-				if(typeof options.timeout == "undefined") {
+				if(typeof options.timeout !== "undefined") {
 
 					return setTimeout(options.success, options.timeout, data);
 
-				} else if(typeof options.interval == "undefined"){
+				} else if(typeof options.interval !== "undefined"){
 
-					return setInterval(options.success, options.interval, data);
+					return next(options.success, data, options.interval);
 
 				} else {
 
@@ -99,25 +132,44 @@ var  Doo = function () {
 		return this;
 	};
 
+    /**
+    * post, function
+    */
 	this.post = function(options){
 
-		var _xhr = null, form;
+		var _xhr = null,
+			form,
+			data;
 		
-		form = new FormData();
-		_xhr = dooXhr();
+		if(options.formData != undefined) {
 
-		for(name in options.data) { 
+			form = new FormData(options.formData);
 
-			form.append(name, options.data[name]);
+		} else if (options.data != undefined ){
+
+			form = new FormData();
+
+			for(name in options.data) { 
+
+				form.append(name, options.data[name]);
+
+			}
+
+		} else {
+
+			throw new Error("Tu fais un post sans envoyer de donnée.")
 
 		}
 
-		_xhr.open(options.method, options.url);
+		_xhr = this.getXhr();
+		_xhr.timout = 3000;
+
+		_xhr.open("POST", options.url);
 				
 		_xhr.withCredentials = true;
 
 		if(options.type != undefined) {
-		
+			
 			_xhr.setRequestHeader("Content-Type", options.type);
 		
 		}
@@ -125,8 +177,17 @@ var  Doo = function () {
 		_xhr.addEventListener("load", function() {
 
 			if(this.readyState === this.DONE &&  this.status === 200) {
-				console.log(this.timeout);
-				return options.success();
+				
+				try {
+					
+					options.success(JSON.parse(_xhr.responseText));
+
+				}catch(e) {
+
+					console.error("les données réçus non pas pu être transtyper.", e);
+					return options.error({error: 1, status: _xhr.responseText});
+
+				}
 			
 			}else if(this.readyState === this.DONE && this.status !== 200) {
 
@@ -154,7 +215,7 @@ var  Doo = function () {
 };
 
 Doo.prototype.version = "0.0.5";
-Doo.prototype.dooXhr = function() {
+Doo.prototype.getXhr = function() {
 
 	return "XMLHttpRequest" in window 
 	? new XMLHttpRequest() 
