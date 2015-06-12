@@ -1,6 +1,7 @@
 ## doojs
 simple ajax class
 ### Usage
+<<<<<<< HEAD
 Code html
 ```html
 <!DOCTYPE html>
@@ -49,6 +50,5 @@ JSON data
 		"job": "web developer"
 	}
 }
-```
 #### Licence
 MIT
