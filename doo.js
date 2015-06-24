@@ -21,26 +21,51 @@ var next = function(fn, data, ms) {
 
 var  Doo = function () {
 	/**
-	* get,  fonction permettant de 
+	* get,  fonction permettant de
 	*/
 	this.get = function(options){
+
+		if(arguments.length > 1) {
+
+			if(typeof options == "string") {
+
+				if(typeof arguments[1] == "function") {
+
+					var fn = arguments[1];
+
+					var _xhr = this.xhr();
+					_xhr.open("GET", options);
+					_xhr.onload = function() {
+						fn(JSON.parse(_xhr.responseText));
+					};
+					_xhr.onerror = function(e){
+						fn({err: e});
+					}
+					_xhr.send(null);
+
+					return this;
+
+				}
+
+			}
+		}
 
 		if(options.interval != undefined && options.timeout != undefined) {
 
 			options.error({error: 0, status: "not define interval and timeout"});
 			throw new Error("not define interval and timeout");
-		
+
 		}
 
 		if(options.dataType == undefined) {
-			
+
 			options.dataType = "json";
 
 		}
 
 		var _xhr = null, data = "";
-	
-		_xhr = this.getXhr();
+
+		_xhr = this.xhr();
 		_xhr.timout = 3000;
 
 		if(options.data != undefined) {
@@ -48,22 +73,22 @@ var  Doo = function () {
 			if(!/\?/.test(options.url)) {
 
 				data = "?";
-				
-			} 
+
+			}
 
 			data += options.data;
 
 		}
-	
+
 		_xhr.open("GET", options.url + encodeURIComponent(data));
-	
+
 		_xhr.withCredentials = true;
 
 		if(options.type != undefined) {
 
 			_xhr.overrideMimeType(options.type);
 			_xhr.setRequestHeader("Content-Type", options.type);
-		
+
 		}
 
 		_xhr.addEventListener("load", function() {
@@ -79,9 +104,9 @@ var  Doo = function () {
 						data = JSON.parse(_xhr.responseText);
 
 					} else if (options.dataType === "xml"){
-					
+
 						data = _xhr.responseXML;
-					
+
 					} else {
 
 						data = _xhr.responseText;
@@ -95,7 +120,7 @@ var  Doo = function () {
 					options.error({error: 1, status: _xhr.responseText});
 
 				}
-				
+
 				if(typeof options.timeout !== "undefined") {
 
 					return setTimeout(options.success, options.timeout, data);
@@ -111,9 +136,9 @@ var  Doo = function () {
 				}
 
 			}else if(this.readyState === this.DONE && this.status !== 200) {
-				
+
 				return options.error({
-					error: _xhr.status, 
+					error: _xhr.status,
 					status: _xhr.statusText
 				});
 
@@ -122,7 +147,7 @@ var  Doo = function () {
 		}, false);
 
 		_xhr.addEventListener("error", function(event){
-			
+
 			options.error(event);
 
 		}, false);
@@ -140,7 +165,7 @@ var  Doo = function () {
 		var _xhr = null,
 			form,
 			data;
-		
+
 		if(options.formData != undefined) {
 
 			form = new FormData(options.formData);
@@ -149,7 +174,7 @@ var  Doo = function () {
 
 			form = new FormData();
 
-			for(name in options.data) { 
+			for(name in options.data) {
 
 				form.append(name, options.data[name]);
 
@@ -161,25 +186,25 @@ var  Doo = function () {
 
 		}
 
-		_xhr = this.getXhr();
+		_xhr = this.xhr();
 		_xhr.timout = 3000;
 
 		_xhr.open("POST", options.url);
-				
+
 		_xhr.withCredentials = true;
 
 		if(options.type != undefined) {
-			
+
 			_xhr.setRequestHeader("Content-Type", options.type);
-		
+
 		}
 
 		_xhr.addEventListener("load", function() {
 
 			if(this.readyState === this.DONE &&  this.status === 200) {
-				
+
 				try {
-					
+
 					options.success(JSON.parse(_xhr.responseText));
 
 				}catch(e) {
@@ -188,7 +213,7 @@ var  Doo = function () {
 					return options.error({error: 1, status: _xhr.responseText});
 
 				}
-			
+
 			}else if(this.readyState === this.DONE && this.status !== 200) {
 
 				return options.error({
@@ -204,7 +229,7 @@ var  Doo = function () {
 		_xhr.addEventListener("error", function(event) {
 
 			options.error(event);
-		
+
 		}, false);
 
 		_xhr.send(form);
@@ -215,10 +240,10 @@ var  Doo = function () {
 };
 
 Doo.prototype.version = "0.0.5";
-Doo.prototype.getXhr = function() {
+Doo.prototype.xhr = function() {
 
-	return "XMLHttpRequest" in window 
-	? new XMLHttpRequest() 
+	return "XMLHttpRequest" in window
+	? new XMLHttpRequest()
 	: new ActiveXObejct(Microsoft.XML);
 
 };
