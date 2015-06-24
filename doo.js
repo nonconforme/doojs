@@ -157,6 +157,28 @@ var  Doo = function () {
 		return this;
 	};
 
+	/*
+		Get JSON data
+	*/
+	this.getJSON = function(url, fn) {
+
+		if(url.indexOf(".json") === -1) {
+				fn({error: "File isn't JSON."});
+				return;
+		}
+
+		var _xhr = this.xhr();
+		_xhr.open("GET", url);
+		_xhr.onload = function() {
+			fn(JSON.parse(_xhr.responseText));
+		};
+		_xhr.onerror = function(e) {
+			fn(e);
+		};
+		_xhr.send(null);
+		
+	};
+
     /**
     * post, function
     */
@@ -239,7 +261,7 @@ var  Doo = function () {
 
 };
 
-Doo.prototype.version = "0.0.5";
+Doo.prototype.version = "0.0.7";
 Doo.prototype.xhr = function() {
 
 	return "XMLHttpRequest" in window
