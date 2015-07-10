@@ -1,11 +1,17 @@
 /**
-* doo v0.0.5
-* <info@diagnostic-ci.com>
+* ====================================================================================
+* doo v0.0.8
 *
-* Create and maintener by Franck Dakia and diagnostic develper
-* - Etchien Boa
-* - Elvice Zokora
-* http://github.com/papac/doojs
+* If you want use jquery ajax and you wan't load jquery library. doojs is appropriate.
+* doojs is simple ajax class.
+*
+* Create and maintener by Franck Dakia and diagnostic develper.
+*
+* @author Franck Dakia
+* @author Etchien Boa
+* github: http://github.com/papac/doojs
+* email: dakiafranckinfo@gmail.com
+* ====================================================================================
 */
 
 ;(function(){
@@ -42,7 +48,6 @@ var  Doo = function () {
 						fn({err: e});
 					}
 					_xhr.send(null);
-
 					return this;
 
 				}
