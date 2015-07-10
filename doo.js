@@ -70,7 +70,7 @@ var  Doo = function () {
 
 		if(options.data != undefined) {
 
-			if(!/\?/.test(options.url)) {
+			if(!/\?$/.test(options.url)) {
 
 				data = "?";
 
@@ -152,7 +152,7 @@ var  Doo = function () {
 
 		}, false);
 
-		_xhr.send();
+		_xhr.send(null);
 
 		return this;
 	};
