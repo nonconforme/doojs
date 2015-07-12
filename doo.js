@@ -30,50 +30,46 @@ var  Doo = function () {
 	* get,  fonction permettant de
 	*/
 	this.get = function(options){
+		var _xhr = {};
 
 		if(arguments.length > 1) {
 
 			if(typeof options == "string") {
-
 				if(typeof arguments[1] == "function") {
-
 					var fn = arguments[1];
-
-					var _xhr = this.xhr();
+					_xhr = this.xhr();
 					_xhr.open("GET", options);
 					_xhr.onload = function() {
 						fn(JSON.parse(_xhr.responseText));
 					};
 					_xhr.onerror = function(e){
 						fn({err: e});
-					}
+					};
 					_xhr.send(null);
 					return this;
-
 				}
-
 			}
 		}
 
-		if(options.interval != undefined && options.timeout != undefined) {
+		if(options.interval !== 'undefined' && options.timeout !== 'undefined') {
 
 			options.error({error: 0, status: "not define interval and timeout"});
 			throw new Error("not define interval and timeout");
 
 		}
 
-		if(options.dataType == undefined) {
+		if(options.dataType === 'undefined') {
 
 			options.dataType = "json";
 
 		}
 
-		var _xhr = null, data = "";
+		data = "";
 
 		_xhr = this.xhr();
 		_xhr.timout = 3000;
 
-		if(options.data != undefined) {
+		if(options.data !== undefined) {
 
 			if(!/\?$/.test(options.url)) {
 
@@ -89,7 +85,7 @@ var  Doo = function () {
 
 		_xhr.withCredentials = true;
 
-		if(options.type != undefined) {
+		if(options.type !== 'undefined') {
 
 			_xhr.overrideMimeType(options.type);
 			_xhr.setRequestHeader("Content-Type", options.type);
@@ -193,15 +189,15 @@ var  Doo = function () {
 			form,
 			data;
 
-		if(options.formData != undefined) {
+		if(options.formData !== 'undefined') {
 
 			form = new FormData(options.formData);
 
-		} else if (options.data != undefined ){
+		} else if (options.data !== 'undefined'){
 
 			form = new FormData();
 
-			for(name in options.data) {
+			for(var name in options.data) {
 
 				form.append(name, options.data[name]);
 
@@ -209,7 +205,7 @@ var  Doo = function () {
 
 		} else {
 
-			throw new Error("Tu fais un post sans envoyer de donnée.")
+			throw new Error("Tu fais un post sans envoyer de donnée.");
 
 		}
 
@@ -220,7 +216,7 @@ var  Doo = function () {
 
 		_xhr.withCredentials = true;
 
-		if(options.type != undefined) {
+		if(options.type !== 'undefined') {
 
 			_xhr.setRequestHeader("Content-Type", options.type);
 
@@ -269,8 +265,7 @@ var  Doo = function () {
 Doo.prototype.version = "0.0.7";
 Doo.prototype.xhr = function() {
 
-	return "XMLHttpRequest" in window
-	? new XMLHttpRequest()
+	return "XMLHttpRequest" in window ? new XMLHttpRequest()
 	: new ActiveXObejct(Microsoft.XML);
 
 };

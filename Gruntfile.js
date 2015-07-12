@@ -1,21 +1,21 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
+		jshint: {
+			all: ["doo.js"]
+		},
 		uglify: {
 			dist: {
 				files: {
-					"doo.js": ["dist/doo.min.js"]
+					"dist/doo.min.js": ["doo.js"]
 				}
 			}
-		},
-		jshint: {
-			all: ["doo.js"]
 		}
 	});
 
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	
-	grunt.registerTasks("default", ["jshint", "uglify"]);
+	grunt.registerTask("default", ["jshint", "uglify"]);
 
 };
