@@ -2,56 +2,29 @@
 If you want use jquery ajax and you want not load jquery library. doojs is appropriate.
 `doojs` is a simple ajax class. Implement three methods: `doo.get`, `doo.post` and `doo.getJSON`.
 
-### Usage
+### get-start
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8"/>
-	<title>Test doojs</title>
-</head>
-<body>
- <div id="r">
- </div>
- <script type="text/javascript" src="../doo.js"></script>
-</body>
-</html>
+	<div id="response"></div>
+	<script src="path/to/doo.js"></script>
 ```
-Code javascript
----------------
-#### 
 ```js
-"use strict";
-var r = document.getElementById('r');
+	var res = document.getElementById("response");
+	doo.get({
+		host: "hostname",
+		dataType: "text",
+		success: function(data) {
+			res.innerHTML = data;
+		},
+		error: function(err) {
 
-doo.get({
-	url: 'test/db.json',
-	dataType: "json",
-	type: "application/json",
-	timout: 500,
-	success: function(data) {
-		r.innerHTML = "nom: " + data.name + "<br/>prenom: " + data.lastname + "<br/>mail: " + data.adress.mail;
-	},
-	error: function(err) {
-		r.innerHTML = "code: " + err.error + "<br/>status: " + err.status;
-	}
-});
+		}
+	});
 ```
-JSON data
-```json
-{
-	"name": "Dakia",
-	"lastname": "Franck",
-	"adress": {
-		"mail": "dakiafranckinfo@gmail.com",
-		"phone": "+22549929598",
-		"job": "web developer"
-	}
-}
-```
+
 _NB: You can run the node server in test folder, for testing send and receive data_
 #### Licence
-Copyright (c) 2015 "Cowboy" Franck Dakia
+MIT Licence
+Copyright (c) 2015 "Franck Dakia"
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
