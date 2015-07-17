@@ -29,46 +29,62 @@
 
 "use strict";
 
-// make recusive sended request.
-var next = function (fn, options, ms) {
-
-	fn(options);
-	setTimeout(next, ms, fn, options, ms);
-
-};
-
 var  Doo = (function () {
 	/**
-	* @private sendGet, sendPost, sendJSON
+	* @private sendGet, sendPost, sendJSONorXML, xhr
 	* There are private function
 	*/
 
+	var xhr = function () {
+		return "XMLHttpRequest" in window ? new XMLHttpRequest()
+	   : new ActiveXObejct("Microsoft.XML");
+	};
+
+	// make recusive sended request.
+	var next = function (fn, options, ms) {
+		fn(options);
+		setTimeout(next, ms, fn, options, ms);
+	};
+
+	// Alert message collection
+	var message = {
+		cast: "received data have not been typecast to object.",
+		dataNoSend: "You make a post without sending data...",
+		timeError: "timeout interval properties should not be set at the same time",
+		isJSON: "File isn't JSON.",
+		isXML: "File isn't XML."
+	};
+
+	//
 	var sendGet = function(options) {
 
-		var _xhr = this.xhr();
+		var _xhr = xhr();
 
-		if (options.timeout !== "undefined" && options.timeout === "number") {
+		if (typeof options.timeout !== "undefined" && typeof options.timeout === "number") {
 			_xhr.timout = options.timeout;
 		}
 
 		var data = "";
 
-		if (options.pathname !== "undefined") {
+		if (typeof options.data !== "undefined") {
 
 			if (!/\?$/.test(options.host)) {
 				data = "?";
 			}
 
-			data += encodeURIComponent(options.pathname);
+			data += encodeURIComponent(options.data);
 
 		}
 
-		_xhr.open("GET", options.host + data);
-		_xhr.withCredentials = true;
+		_xhr.open("GET", options.url + data);
+
+		if (typeof options.credential !== "undefined") {
+			_xhr.withCredentials = true;
+		}
 		/*
 			If you have defined type, system go to override mime type and request["content-type"].
 		*/
-		if (options.type !== "undefined") {
+		if (typeof options.type !== "undefined") {
 
 			_xhr.overrideMimeType(options.type);
 			_xhr.setRequestHeader("Content-Type", options.type);
@@ -80,9 +96,10 @@ var  Doo = (function () {
 			if (this.readyState === this.DONE &&  this.status === 200) {
 
 				// Response data.
-				var data = {};
+				var data;
 
 				try {
+
 					// Construction of xml|json|text data format.
 					if (options.dataType === "json") {
 						data = JSON.parse(_xhr.responseText);
@@ -92,21 +109,18 @@ var  Doo = (function () {
 						data = _xhr.responseText;
 					}
 
+					options.success(data);
+
 				} catch(e) {
 
-					console.error("received the data not been typecast.", e);
-					options.error({error: 1, status: "received the data not been typecast.", response: _xhr.responseText});
+					if (typeof options.error !== "function") return console.error(message.cast);
+					return options.error({status: message.cast, url: options.url});
 
 				}
 
-				options.success(data);
-
 			} else if (this.readyState === this.DONE && this.status !== 200) {
 
-				return options.error({
-					error: _xhr.status,
-					status: _xhr.statusText
-				});
+				return options.error({status: _xhr.statusText});
 
 			}
 
@@ -121,88 +135,96 @@ var  Doo = (function () {
 
 	};
 
-	var sendPost = function(xhr, options) {
+	var sendPost = function() {
 		var _xhr, form, data;
-
-		if (options.formData !== 'undefined') {
-			form = new FormData(options.formData);
-		} else if (options.data !== 'undefined'){
-
-			form = new FormData();
-
-			for (var name in options.data) {
-				form.append(name, options.data[name]);
+		return function(options) {
+			/*
+				verify, if interval and timeout are defined.
+			*/
+			if (options.credential === "undefined" || options.credential !== true) {
+				options.credential = false;
 			}
 
-		} else {
 
-			if (options.error !== "undefined" && typeof options.error === "function") {
-				return options.error({status: "You make a post without sending data..."});
-			}
+			if (typeof options.formData !== 'undefined') {
+				form = new FormData(options.formData);
+			} else if (options.data !== 'undefined'){
 
-			throw new Error("You make a post without sending data...");
+				form = new FormData();
 
-		}
-
-		_xhr = this.xhr();
-
-		if (options.timeout !== "undefined" && typeof options.timeout === "number") {
-			_xhr.timout = options.timeout;
-		}
-
-		_xhr.open("POST", options.host);
-
-		if (options.credential !== "undefined") {
-			_xhr.withCredentials = options.credential;
-		}
-
-		if(options.type !== 'undefined') {
-			_xhr.overrideMimeType(options.type);
-			_xhr.setRequestHeader("Content-Type", options.type);
-		}
-
-		_xhr.addEventListener("load", function () {
-
-			if (this.readyState === this.DONE &&  this.status === 200) {
-
-				try {
-					options.success(JSON.parse(_xhr.responseText));
-				} catch(e) {
-					console.error("received the data not been typecast.", e);
-					return options.error({error: true, status: _xhr.responseText});
+				for (var name in options.data) {
+					form.append(name, options.data[name]);
 				}
 
-			} else if (this.readyState === this.DONE && this.status !== 200) {
-				return options.error({
-					code: _xhr.status,
-					statusText: _xhr.statusText,
-					host: options.host
-				});
+			} else {
+
+				if (typeof options.error !== "undefined" && typeof options.error === "function") {
+					return options.error({status: message.dataNoSend});
+				}
+
+				throw new Error(message.dataNoSend);
+
 			}
 
-		}, false);
+			_xhr = this.xhr();
 
-		_xhr.addEventListener("error", function (event) {
-			options.error(event);
-		}, false);
+			if (options.timeout !== "undefined" && typeof options.timeout === "number") {
+				_xhr.timout = options.timeout;
+			}
 
-		_xhr.send(form);
+			_xhr.open("POST", options.url);
 
+			if (options.credential !== "undefined") {
+				_xhr.withCredentials = options.credential;
+			}
+
+			if(options.type !== 'undefined') {
+				_xhr.overrideMimeType(options.type);
+				_xhr.setRequestHeader("Content-Type", options.type);
+			}
+
+			_xhr.addEventListener("load", function () {
+
+				if (this.readyState === this.DONE &&  this.status === 200) {
+
+					try {
+						options.success(JSON.parse(_xhr.responseText));
+					} catch(e) {
+						console.error(message.cast, e);
+						return options.error({status: message.cast});
+					}
+
+				} else if (this.readyState === this.DONE && this.status !== 200) {
+					return options.error({
+						code: _xhr.status,
+						statusText: _xhr.statusText,
+						host: options.host
+					});
+				}
+
+			}, false);
+
+			_xhr.addEventListener("error", function (event) {
+				options.error(event);
+			}, false);
+
+			_xhr.send(form);
+		};
 	};
  	/*
 		JSON and XML request handler
 	*/
 	var sendXMLOrJSOM = function(msg, type) {
 		return function(url, fn) {
-			if(url.indexOf("." + type) === -1) {
-				fn({error: msg}); return this; // to abort now.
-			}
+
 			var _xhr = this.xhr();
 			_xhr.open("GET", url);
+			// load listener
 			_xhr.onload = function () {
 				if (type === "json") fn(JSON.parse(_xhr.responseText));
-				else fn(_xhr.responseXML);
+				else if (type === "xml") fn(_xhr.responseXML);
 			};
+			// error listener
 			_xhr.onerror = function (e) {
 				fn(e);
 			};
@@ -232,7 +254,11 @@ var  Doo = (function () {
 						var _xhr = this.xhr();
 						_xhr.open("GET", options);
 						_xhr.onload = function () {
-							fn(false, JSON.parse(_xhr.responseText));
+							try {
+								fn(false, JSON.parse(_xhr.responseText));
+							} catch(e) {
+								console.error(message.cast);
+							}
 						};
 						_xhr.onerror = function (e) {
 							fn({status: e}, null);
@@ -245,29 +271,29 @@ var  Doo = (function () {
 			/*
 				credential at true if it's defined
 			*/
-			if (options.credential === "undefined" || options.credential !== true) {
+			if (typeof options.credential === "undefined" || typeof options.credential === "boolean") {
 				options.credential = false;
 			}
 			/*
 				verify, if interval and timeout are defined.
 			*/
-			if (options.interval !== 'undefined' && options.timeout !== 'undefined') {
+			if (typeof options.interval !== 'undefined' && typeof options.timeout !== 'undefined') {
 
-				options.error({error: 0, status: "timeout interval properties should not be set at the same time"});
-				throw new Error("timeout and interval properties should not be set at the same time");
+				options.error({error: !0, status: message.timeError});
+				throw new Error(message.timeError);
 
 			}
 			/*
 				Verify if dataType is defined
 			*/
-			if (options.dataType === 'undefined') {
+			if (typeof options.dataType === "undefined") {
 				options.dataType = "json";
 			}
 			/*
 				Request interval
 			*/
-			if (options.interval !== "undefined") {
-				next(sendGet, options, options.timeout);
+			if (typeof options.interval !== "undefined") {
+				next(sendGet, options, options.interval);
 			} else {
 				sendGet(options);
 			}
@@ -278,27 +304,15 @@ var  Doo = (function () {
 		/*
 			Get JSON data
 		*/
-		this.getJSON = sendJSON("File isn't JSON.", "json");
+		this.getJSON = sendXMLOrJSOM(message.isJSON, "json");
 		/*
 			Get xml data
 		*/
-		this.getXML = sendXMLOrJSOM("File isn'XML", "xml");
+		this.getXML = sendXMLOrJSOM(message.isXML, "xml");
 		/*
 	    * POST, function
 	    */
-		this.post = function (options) {
-			/*
-				verify, if interval and timeout are defined.
-			*/
-			if (options.credential === "undefined" || options.credential !== true) {
-				options.credential = false;
-			}
-
-			sendPost(options);
-
-			// Return doo object, for caning chain.
-			return this;
-		};
+		this.post = sendPost();
 	};
 
 
@@ -307,8 +321,7 @@ var  Doo = (function () {
 Doo.prototype.version = "0.1.2";
 Doo.prototype.xhr = function () {
 
-	return "XMLHttpRequest" in window ? new XMLHttpRequest()
-	: new ActiveXObejct(Microsoft.XML);
+	return xhr();
 
 };
 
