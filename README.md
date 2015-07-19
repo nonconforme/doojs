@@ -57,21 +57,21 @@ All usage of `doo` methods.
 
 ## Simple method
 * getJOSN
-	it take two parameters `url` and `function(err, data)`.
-	`err` is `boolean` and `data` is `JSON.parse(responseText)`.
-	```js
-		doo.getJSON("url-to-server-or-file", function(err, data) {
-			if (err) {
-				return console.error("request error");
-			}
-			res.innerHTML = "";
-			for (var value of data) {
-				res.innerHTML += value + "<br/>" ;
-			}
-		});
+it take two parameters `url` and `function(err, data)`.
+`err` is `boolean` and `data` is `JSON.parse(responseText)`.
+```js
+	doo.getJSON("url-to-server-or-file", function(err, data) {
+		if (err) {
+			return console.error("request error");
+		}
+		res.innerHTML = "";
+		for (var value of data) {
+			res.innerHTML += value + "<br/>" ;
+		}
+	});
 	```
 * getXML
-	likewise `getJSON`, but `data` is a `XMLDocument`
+likewise `getJSON`, but `data` is a `XMLDocument`
 
 _NB: You can run the node server in test folder, for testing send and receive data_
 
