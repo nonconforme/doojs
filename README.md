@@ -1,4 +1,4 @@
-g## About
+## About
 If you want use jquery ajax and you want not load jquery library. `doojs` is appropriate.
 `doojs` is a simple ajax class. Implement four methods: `doo.get`, `doo.post`, `doo.getJSON`, `doo.getXML`.
 
