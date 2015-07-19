@@ -318,13 +318,17 @@ var  Doo = (function () {
 
 })();
 
+// version
 Doo.prototype.version = "0.1.2";
+
+// return xhr object, if you want use Ajax otherwise.
 Doo.prototype.xhr = function () {
 
 	return xhr();
 
 };
 
+// doo object added in window
 this.doo = new Doo();
 
 }).call(this);
