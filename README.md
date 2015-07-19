@@ -1,4 +1,4 @@
-## About
+g## About
 If you want use jquery ajax and you want not load jquery library. `doojs` is appropriate.
 `doojs` is a simple ajax class. Implement four methods: `doo.get`, `doo.post`, `doo.getJSON`, `doo.getXML`.
 
@@ -34,42 +34,44 @@ If you want use jquery ajax and you want not load jquery library. `doojs` is app
 All usage of `doo` methods.
 
 ## get method
-	`doo.get` method take `object`. in this object.
-	- `url` path
-	- `data` additionnal data, e.g `data: name=foo&lastname=bar`
-	- `dataType` type for receive data. it can be `json`, `xml` or `text`.
-		by default dataType = `json`
-	- `interval` active setInterval, default null
-	- `timeout` active setTimeout, default null
-	- `type` override mime type in xhr object
-	- `success` function have executed if no error, it take `data`, response.
-	- `error` function have executed if error, it take `error`.
+
+`doo.get` method take `object`. in this object.
+- `url` path
+- `data` additionnal data, e.g `data: name=foo&lastname=bar`
+- `dataType` type for receive data. it can be `json`, `xml` or `text`.
+	by default dataType = `json`
+- `interval` active setInterval, default null
+- `timeout` active setTimeout, default null
+- `type` override mime type in xhr object
+- `success` function have executed if no error, it take `data`, response.
+- `error` function have executed if error, it take `error`.
 
 ## post method
-	`doo.post` method take `object`. in this object.
-	- `url` path
-	- `data` additionnal data, e.g `data: name=foo&lastname=bar`
-	- `type` override mime type in xhr object
-	- `success` function have executed if no error, it take `data`, response.
-	- `error` function have executed if error, it take `error`.
+
+`doo.post` method take `object`. in this object.
+- `url` path
+- `data` additionnal data, e.g `data: name=foo&lastname=bar`
+- `type` override mime type in xhr object
+- `success` function have executed if no error, it take `data`, response.
+- `error` function have executed if error, it take `error`.
 
 ## Simple method
-	* getJOSN
-		it take two parameters `url` and `function(err, data)`.
-		`err` is `boolean` and `data` is `JSON.parse(responseText)`.
-		```js
-			doo.getJSON("url-to-server-or-file", function(err, data) {
-				if (err) {
-					return console.error("request error");
-				}
-				res.innerHTML = "";
-				for (var value of data) {
-					res.innerHTML += value + "<br/>" ;
-				}
-			});
-		```
-	* getXML
-		likewise `getJSON`, but `data` is a `XMLDocument`
+* getJOSN
+	it take two parameters `url` and `function(err, data)`.
+	`err` is `boolean` and `data` is `JSON.parse(responseText)`.
+	```js
+		doo.getJSON("url-to-server-or-file", function(err, data) {
+			if (err) {
+				return console.error("request error");
+			}
+			res.innerHTML = "";
+			for (var value of data) {
+				res.innerHTML += value + "<br/>" ;
+			}
+		});
+	```
+* getXML
+	likewise `getJSON`, but `data` is a `XMLDocument`
 
 _NB: You can run the node server in test folder, for testing send and receive data_
 
