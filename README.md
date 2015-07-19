@@ -69,7 +69,7 @@ it take two parameters `url` and `function(err, data)`.
 			res.innerHTML += value + "<br/>" ;
 		}
 	});
-	```
+```
 * getXML
 likewise `getJSON`, but `data` is a `XMLDocument`
 
