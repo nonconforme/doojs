@@ -11,7 +11,7 @@
 | |              | || |              | || |              | || |              | |
 | '--------------' || '--------------' || '--------------' || '--------------' |
 '----------------'  '----------------'  '----------------'  '----------------'
-* doo v0.1.2
+* doo v0.1.3
 * [ATOM & CODING]
 * If you want use jquery ajax and you wan't load jquery library. doojs is appropriate.
 * doojs is simple ajax class.
