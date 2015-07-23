@@ -2,12 +2,12 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		jshint: {
-			all: ["doo.js"]
+			all: ["src/doo.js"]
 		},
 		uglify: {
 			dist: {
 				files: {
-					"dist/doo.min.js": ["doo.js"]
+					"dist/doo.min.js": ["src/doo.js"]
 				}
 			}
 		}
