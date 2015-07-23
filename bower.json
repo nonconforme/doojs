@@ -5,22 +5,25 @@
   "authors": [
     "Dakia Franck <dakiafranckinfo@gmail.com>"
   ],
-  "description": "Simple xhr class",
-  "main": "",
+  "description": "Simple XHR Class, If you wan't load Jquery.",
+  "main": "src/doo.js, dist/doo.min.js",
   "moduleType": [
-    "node"
+    "amd",
+    "es6",
+    "globals",
+    "yui"
   ],
   "keywords": [
-    "xhr",
+    "Xhr",
     "Ajax",
-    "doo.js"
+    "request"
   ],
   "license": "MIT",
   "ignore": [
+    "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "tests",
-    "**/.*"
+    "tests"
   ]
 }
