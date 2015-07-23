@@ -6,7 +6,7 @@
     "Dakia Franck <dakiafranckinfo@gmail.com>"
   ],
   "description": "Simple XHR Class, If you wan't load Jquery.",
-  "main": "src/doo.js, dist/doo.min.js",
+  "main": ["src/doo.js", "dist/doo.min.js"],
   "moduleType": [
     "amd",
     "es6",
