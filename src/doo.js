@@ -29,16 +29,15 @@
 
 "use strict";
 
+/**
+* @private sendGet, sendPost, sendJSONorXML, xhr
+* There are private function
+*/
+var xhr = function () {
+	return "XMLHttpRequest" in window ? new XMLHttpRequest()
+   : new ActiveXObejct("Microsoft.XML");
+};
 var  Doo = (function () {
-	/**
-	* @private sendGet, sendPost, sendJSONorXML, xhr
-	* There are private function
-	*/
-
-	var xhr = function () {
-		return "XMLHttpRequest" in window ? new XMLHttpRequest()
-	   : new ActiveXObejct("Microsoft.XML");
-	};
 
 	// make recusive sended request.
 	var next = function (fn, options, ms) {
