@@ -1,6 +1,6 @@
 {
   "name": "doojs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "If you want use jquery ajax and you want not load jquery library. doojs is appropriate. `doojs` is a simple ajax class. Implement three methods: `doo.get`, `doo.post` and `doo.getJSON`.",
   "main": "doo.js",
   "directories": {
